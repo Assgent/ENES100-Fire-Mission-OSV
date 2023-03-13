@@ -89,6 +89,22 @@ __**Examples of correct syntax:**__
   }
   
   ```
+  
+__How do I **start the arduino**?__
+  ```C
+  void setup() 
+  {
+    Serial.begin(9600); //Do this first so you can get text output in your computer from the arduino
+    
+    Serial.println("This prints text to your computer and moves one line down");
+    Serial.print("This just prints text to your computer");
+  }
+
+  void loop() 
+  {
+    //Code here runs over and over again for the lifetime of your program
+  }
+```
 
 __How do I store an **integer**?__ 
 
