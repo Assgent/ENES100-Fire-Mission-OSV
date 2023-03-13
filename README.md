@@ -53,4 +53,22 @@ Represents an individual Servo on the OSV
   Use `double` 
   
   *(You can also use `float`, but the Aruco library uses `double` so we should just use double instead)*
+ 
+-How do I store a **sentence**? 
+
+  See: https://myhomethings.eu/en/arduino-string-objects/
+  
+  Try NOT to use `char[]` (C strings). They're really hard!
+  
+-How do I convert between data types?
+
+  Use casting:
+  ```C
+  //example
+  
+  double x = 3.14;
+  int y = (int)x; //y now equals just "3", but as an integer
+  ```
+  
+  *Note that this **doesn't work with everything**!*
   
