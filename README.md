@@ -38,6 +38,58 @@ Represents an individual Servo on the OSV
 
 **ENES100 Aruco Library Docs:** https://enes100.umd.edu/libraries/enes100
 
+__**Examples of correct syntax:**__
+  ```C
+  
+  int my_array[] = {1, 2, 3, 4, 5}; //This is an array
+  double my_decimal = 0.1; //This is a decimal value
+  int my_int = 3; //This is an integer value
+  
+  int my_array_member = my_array[my_int]; //This gets the FOURTH member of the array (computers count from 0)
+  //int my_other_array_member = my_array[my_decimal]; //This is WRONG. You shouldn't access arrays with decimals
+  
+  //if/else statement
+  if (/*condition here*/)
+  {
+    //code here
+  }
+  else if (/*2nd condition*/)
+  {
+    //code here
+  }
+  else
+  {
+    //code here
+  }
+  
+  //for loop
+  for (int i = 0; i < /*Value to stop before*/; i++)
+  {
+    //code here runs again and again until i >= [the value above]
+  }
+  
+  //while loop
+  while (/*Condition here*/)
+  {
+    //code runs again and again until condition is false
+  }
+  
+  //switch/case
+  switch (/*number or value*/)
+  {
+    case /*example 1*/:
+      //code here
+      break; //Then leave the switch statement
+    case /*example 2*/:
+      //code here
+      //Loops back again
+    defualt:
+      //code here
+      break;
+  }
+  
+  ```
+
 __How do I store an **integer**?__ 
 
   Use `int` (16-bit value, stores numbers from [-32,767, 32,767])
