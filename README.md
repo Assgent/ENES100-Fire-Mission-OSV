@@ -32,6 +32,6 @@ Represents an individual motor on the OSV
 
 Represents an individual Servo on the OSV
 
-#Coding helpsheet 
+## Coding Helpsheet
 
 **ENES100 Aruco Library Docs:** https://enes100.umd.edu/libraries/enes100
