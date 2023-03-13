@@ -37,3 +37,11 @@ Represents an individual Servo on the OSV
 ## Coding Helpsheet
 
 **ENES100 Aruco Library Docs:** https://enes100.umd.edu/libraries/enes100
+
+-How do I store an **integer**? 
+  Use `int` (16-bit value, stores numbers from [-32,767, 32,767])
+-How do I store a **positive, large integer**? 
+  Use `unsigned int` (16-bit value, stores numbers from [0, 65,535]) 
+-How do I store a **decimal number**?
+  Use `double` 
+  *(You can also use `float`, but the Aruco library uses `double` so we should just use double instead)*
