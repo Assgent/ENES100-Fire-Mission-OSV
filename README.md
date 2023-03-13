@@ -20,15 +20,15 @@ Aruco Marker:
 
 *(How OUR code works - please update when possible)*
 
-### 'Navigation'
+### `Navigation()`
 
 Relevant library for movement and navigation
 
-### `Motor`
+### `Motor()`
 
 Represents an individual motor on the OSV
 
-### `Servo`
+### `Servo()`
 
 Represents an individual Servo on the OSV
 
