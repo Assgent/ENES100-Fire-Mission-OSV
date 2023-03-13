@@ -2,6 +2,8 @@
 
 Arduino code for *Team Notre Dame*'s OSV robot, Spring 2023 UMD.
 
+Please update this document when you make a change!
+
 # Documentation
 
 ## Defnitions 
@@ -18,7 +20,7 @@ Aruco Marker:
 
 ## Classes
 
-*(How OUR code works - please update when possible)*
+*(How OUR code works - see below to make sense of what we have so far)*
 
 ### `Navigation()`
 
