@@ -9,11 +9,16 @@ Arduino code for *Team Notre Dame*'s OSV robot, Spring 2023 UMD.
 Aruco Marker:
 
 `#define X_MAX 3.94` - 
-`#define X_MIN 0.07`
-`#define Y_MAX 1.97`
-`#define Y_MIN 0.06`
+
+`#define X_MIN 0.07` -
+
+`#define Y_MAX 1.97` -
+
+`#define Y_MIN 0.06` -
 
 ## Classes
+
+*(How OUR code works - please update when possible)*
 
 ### 'Navigation'
 
