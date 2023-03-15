@@ -31,11 +31,11 @@ Aruco Marker:
 
 ### `Button(int analogPinIn)`
 
-Do `#include "Button.hpp" to use this file!
+*Do `#include "Button.hpp" to use this file!*
 
 `int Button::pressed()`
 
-Pretty self-explanatory. 
+  Pretty self-explanatory. 
 
 ### `Motor()`
 
@@ -43,11 +43,11 @@ Represents an individual motor on the OSV
 
 ### `Photoresistor(int analogPinIn)`
 
-Do `#include "Photoresistor.hpp" to use this file!
+*Do `#include "Photoresistor.hpp" to use this file!*
 
 `int int Photoresistor::balloonGone()`
 
-Pretty self-explanatory. 
+  Pretty self-explanatory. 
 
 ## Coding Helpsheet
 
