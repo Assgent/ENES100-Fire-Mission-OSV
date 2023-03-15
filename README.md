@@ -22,17 +22,17 @@ Aruco Marker:
 
 *(How OUR code works - see below to make sense of what we have so far)*
 
-### `Navigation()`
+### `Button(int analogPinIn)`
 
-Relevant library for movement and navigation
+Relevant library push buttons - also includes getOrientation()
 
 ### `Motor()`
 
 Represents an individual motor on the OSV
 
-### `Servo()`
+### `Photoresistor(int analogPinIn)`
 
-Represents an individual Servo on the OSV
+Represents an individual photo resistor on the OSV
 
 ## Coding Helpsheet
 
@@ -89,6 +89,10 @@ __**Examples of correct syntax:**__
   }
   
   ```
+  
+__How do I use **code from different files?**__
+
+  Use `#include "<filename>.hpp"`! For example: `#include "button.hpp"` allows you to use the `Button` class.
   
 __How do I **start the arduino**?__
   ```C
