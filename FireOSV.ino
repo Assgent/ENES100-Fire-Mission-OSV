@@ -11,9 +11,18 @@ Tips:
 -Please indent and keep it clean!
 */
 
-#include "Photoresistor.cpp"
+#include "Photoresistor.hpp"
+#include "Button.hpp"
 
-extern Photoresistor p1 = Photoresistor(A1);
+//=============================================
+#define PUSH_BUTTON_1_ANALOG_PORT A0
+#define PUSH_BUTTON_2_ANALOG_PORT A1
+
+//=============================================
+
+//extern Photoresistor p1 = Photoresistor(A1);
+extern Button b1 = Button(PUSH_BUTTON_1_ANALOG_PORT);
+extern Button b2 = Button(PUSH_BUTTON_2_ANALOG_PORT);
 
 void setup() 
 {
@@ -24,5 +33,5 @@ void setup()
 
 void loop() 
 {
-  Serial.println(p1.balloonGone());
+  Serial.println(getOrientation(b1, b2));
 }

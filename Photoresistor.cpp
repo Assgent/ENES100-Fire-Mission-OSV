@@ -1,35 +1,29 @@
 #include <Arduino.h>
 
 #include "Utilities.hpp"
+#include "Photoresistor.hpp"
 
 //============================================================
 #define BALLOON_THRESHOLD 0.80
 //============================================================
 
-class Photoresistor
+Photoresistor::Photoresistor(int analogPinIn)
 {
-  public:
-	  Photoresistor(int analogPinIn)
-    {
-      analogPin = analogPinIn;
-    }
+  analogPin = analogPinIn;
+}
 
-    int rawValue()
-    {
-      return analogRead(analogPin);
-    }
+int Photoresistor::rawValue()
+{
+  return analogRead(analogPin);
+}
 
-    double lightPercentage()
-    {
-      return (1023 - rawValue()) / MAX_ANALOG;
-    }
+double Photoresistor::lightPercentage()
+{
+  return (1023 - rawValue()) / MAX_ANALOG;
+}
 
-    int balloonGone()
-    {
-      return lightPercentage() <= BALLOON_THRESHOLD;
-    }
-
-  private:
-    int analogPin;
-};
+int Photoresistor::balloonGone()
+{
+  return lightPercentage() <= BALLOON_THRESHOLD;
+}
 
