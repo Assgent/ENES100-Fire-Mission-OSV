@@ -8,15 +8,22 @@ Please update this document when you make a change!
 
 ## Defnitions 
 
+Utilities (`Utilities.hpp`):
+
+`#define MAX_ANALOG 1023` - Maximum analogRead(...) value (highest voltage)
+
+`#define LEN(array) = sizeof(array) / sizeof(*array)` - Get the size of an array (only works in-scope; otherwise you need other methods)
+`#define IN_RANGE(number, min, max) number >= min && number <= max` - Return `1` if `x` is in the range of `[min, max]`
+
 Aruco Marker:
 
-`#define X_MAX 3.94` - 
+`#define X_MAX 3.94` - Maximum Aruco X-value
 
-`#define X_MIN 0.07` -
+`#define X_MIN 0.07` - Minimum Aruco X-value
 
-`#define Y_MAX 1.97` -
+`#define Y_MAX 1.97` - Maximum Aruco Y-value
 
-`#define Y_MIN 0.06` -
+`#define Y_MIN 0.06` - Minimum Aruco Y-value
 
 ## Classes
 
@@ -24,7 +31,11 @@ Aruco Marker:
 
 ### `Button(int analogPinIn)`
 
-Relevant library push buttons - also includes getOrientation()
+Do `#include "Button.hpp" to use this file!
+
+`int Button::pressed()`
+
+Pretty self-explanatory. 
 
 ### `Motor()`
 
@@ -32,7 +43,11 @@ Represents an individual motor on the OSV
 
 ### `Photoresistor(int analogPinIn)`
 
-Represents an individual photo resistor on the OSV
+Do `#include "Photoresistor.hpp" to use this file!
+
+`int int Photoresistor::balloonGone()`
+
+Pretty self-explanatory. 
 
 ## Coding Helpsheet
 
@@ -92,7 +107,7 @@ __**Examples of correct syntax:**__
   
 __How do I use **code from different files?**__
 
-  Use `#include "<filename>.hpp"`! For example: `#include "button.hpp"` allows you to use the `Button` class.
+  Use `#include "<filename>.hpp"`! For example: `#include "Button.hpp"` allows you to use the `Button` class.
   
 __How do I **start the arduino**?__
   ```C
