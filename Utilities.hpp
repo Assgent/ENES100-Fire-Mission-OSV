@@ -6,7 +6,7 @@ Don't put actual code here!
 
 //Constants which are used everywhere
 
-#define MAX_ANALOG 1023.0
+#define MAX_ANALOG 1023
 
 //Macros (tools)
 
