@@ -14,6 +14,7 @@ Tips:
 #include "Photoresistor.hpp"
 #include "Navigation.hpp"
 #include "Button.hpp"
+#include "Motor.hpp"
 
 //============================================= Settings
 #define PUSH_BUTTON_1_ANALOG_PORT A0
@@ -25,6 +26,11 @@ Tips:
 #define ARUCO_ID 12
 #define TEAM_NAME "Notre Dame"
 
+#define RWPM 5
+#define LWPM 4
+#define L_EN 3
+#define R_EN 2
+
 //=============================================
 
 extern Photoresistor p1 = Photoresistor(A1);
@@ -33,20 +39,18 @@ extern Button b2 = Button(PUSH_BUTTON_2_ANALOG_PORT);
 
 extern Navigation nav = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, TX_PIN, RX_PIN);
 
+extern Motor motor = Motor(RWPM, LWPM, L_EN, R_EN);
+
 void setup() 
 {
   Serial.begin(9600);
 
   Serial.println(TEAM_NAME);
   Serial.println("Initializing robot!");
-  Serial.println(nav.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
+  //Serial.println(nav.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
+  motor.init();
 }
-
-Coordinate coordinate = Coordinate();
 
 void loop() 
 {
-  nav.passRawCoordinates(&coordinate);
-
-  printCoordinate(coordinate);
 }
