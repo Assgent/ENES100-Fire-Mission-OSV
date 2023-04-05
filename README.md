@@ -14,16 +14,7 @@ Utilities (`Utilities.hpp`):
 
 `#define LEN(array) = sizeof(array) / sizeof(*array)` - Get the size of an array (only works in-scope; otherwise you need other methods)
 `#define IN_RANGE(number, min, max) number >= min && number <= max` - Return `1` if `x` is in the range of `[min, max]`
-
-Aruco Marker:
-
-`#define X_MAX 3.94` - Maximum Aruco X-value
-
-`#define X_MIN 0.07` - Minimum Aruco X-value
-
-`#define Y_MAX 1.97` - Maximum Aruco Y-value
-
-`#define Y_MIN 0.06` - Minimum Aruco Y-value
+`#define RADIANS_TO_DECIMAL(radians) (radians / 2*PI) * 360` - Converts radians to decimals
 
 ## Classes
 
@@ -31,25 +22,46 @@ Aruco Marker:
 
 ### `Button(int analogPinIn)`
 
-*Do `#include "Button.hpp"` to use this file!*
-
+`int rawValue();`
 
 `int Button::pressed()`
 
-Pretty self-explanatory. 
+### `Navigation(char *name, int teamID, int markerID, int rxPin, int txPin)`
+
+`int init();` Always call before using the motor!
+
+`double getRawX();`
+
+`double getRawY();`
+
+`double getVehicleX();`
+
+`double getVehicleY();`
+
+`void passRawCoordinates(Coordinate *coordinate);`
+
+`void passVehicleCoordinates(Coordinate *coordinate);`
+
+`double getRawAngle();`
+
+`double getDegreesAngle();`
 
 
-### `Motor()`
+### `Motor(int RWPMIn, int LWPMIn, int L_ENIn, int R_ENIn)`
 
-Represents an individual motor on the OSV
+`int init();` Always call before using the motor!
+
+`void setPower(short power);`
+`void stop();`
 
 
 ### `Photoresistor(int analogPinIn)`
 
-*Do `#include "Photoresistor.hpp"` to use this file!*
+`int rawValue();`
 
+`double lightPercentage();`
 
-`int Photoresistor::balloonGone()`
+`int balloonGone();`
 
 Pretty self-explanatory. 
 
