@@ -25,7 +25,7 @@ Tips:
 #define RX_PIN 2
 #define TX_PIN 3
 #define FIRE_TEAM 3
-#define ARUCO_ID 12
+#define ARUCO_ID 10
 #define TEAM_NAME "Notre Dame"
 
 #define RIGHT_RWPM 9
@@ -56,28 +56,12 @@ void setup()
 
   Serial.println(TEAM_NAME);
   Serial.println("Initializing robot!");
-  Serial.println(NAV.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
+  //Serial.println(NAV.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
   RIGHT_MOTOR.init();
   LEFT_MOTOR.init();
 }
 
 void loop() 
 {
-  for (int i = 0; i < 4; i++)
-  {
-    RIGHT_MOTOR.setPower(100);
-    LEFT_MOTOR.setPower(-100);
 
-    delay(1200);
-
-    RIGHT_MOTOR.stop();
-    LEFT_MOTOR.stop();
-
-    delay(1200);
-  }
-
-  RIGHT_MOTOR.setPower(100);
-  LEFT_MOTOR.setPower(100);
-
-  delay(10000);
 }

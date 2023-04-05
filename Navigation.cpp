@@ -79,12 +79,30 @@ double Navigation::getVehicleY()
   return 0; //TODO
 }
 
-double Navigation::getAngle()
+/*
+Get raw angle of OSV as transmitted from system in range [-pi, pi]
+*/
+double Navigation::getRawAngle()
 {
   if (!Enes100.updateLocation())
     return -1;
   
   return Enes100.location.theta;
+}
+
+/*
+Get angle of OSV converted to degrees [0, 360]
+*/
+double Navigation::getDegreesAngle()
+{
+  if (!Enes100.updateLocation())
+    return -1;
+  
+  //Fix orientation of angle (radians) and store it; right now it comes in range [-pi, pi] 
+  //and we convert it to [0, 2pi] with this code
+  double radians = Enes100.location.theta < 0 ? Enes100.location.theta + 2.0 * Enes100.location.theta : Enes100.location.theta;
+
+  return RADIANS_TO_DECIMAL(radians); //This macro is from "Utilities.hpp"
 }
 
 /*
@@ -127,7 +145,6 @@ void printCoordinate(Coordinate coordinate)
   Serial.print("[Angle=");
   Serial.print(coordinate.theta);
   Serial.println("])");
-
 }
 
 

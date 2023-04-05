@@ -33,7 +33,9 @@ class Navigation
 
     void passVehicleCoordinates(Coordinate *coordinate);
 
-    double getAngle();
+    double getRawAngle();
+
+    double getDegreesAngle();
 
   private:
     char *name; 

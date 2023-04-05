@@ -12,3 +12,4 @@ Don't put actual code here!
 
 #define LEN(array) = sizeof(array) / sizeof(*array)
 #define IN_RANGE(number, min, max) number >= min && number <= max
+#define RADIANS_TO_DECIMAL(radians) (radians / 2*PI) * 360
