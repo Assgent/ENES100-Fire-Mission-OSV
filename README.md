@@ -28,7 +28,7 @@ Utilities (`Utilities.hpp`):
 
 ### `Navigation(char *name, int teamID, int markerID, int rxPin, int txPin)`
 
-`int init();` Always call before using the motor!
+`int init();` Always call before using the navigation!
 
 `double getRawX();`
 
