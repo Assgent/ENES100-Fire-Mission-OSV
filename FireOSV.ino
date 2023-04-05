@@ -16,7 +16,9 @@ Tips:
 #include "Button.hpp"
 #include "Motor.hpp"
 
-//============================================= Settings
+//=============================================
+//OSV Settings (Pins, values, etc.)
+//=============================================
 #define PUSH_BUTTON_1_ANALOG_PORT A0
 #define PUSH_BUTTON_2_ANALOG_PORT A1
 
@@ -26,20 +28,27 @@ Tips:
 #define ARUCO_ID 12
 #define TEAM_NAME "Notre Dame"
 
-#define RWPM 5
-#define LWPM 4
-#define L_EN 3
-#define R_EN 2
+#define RIGHT_RWPM 9
+#define RIGHT_LWPM 10
+#define LEFT_RWPM 5
+#define LEFT_LWPM 6
+#define L_EN 0 //We direct-wire the 5v "_EN" connections to 5v bus instead of arduino
+#define R_EN 0 //Use 0 to essentially discard values
 
 //=============================================
+//Global OSV Controls
+//=============================================
 
-extern Photoresistor p1 = Photoresistor(A1);
-extern Button b1 = Button(PUSH_BUTTON_1_ANALOG_PORT);
-extern Button b2 = Button(PUSH_BUTTON_2_ANALOG_PORT);
+//extern const Photoresistor p1 = Photoresistor(A1);
+extern const Button BUTTON_RIGHT = Button(PUSH_BUTTON_1_ANALOG_PORT);
+extern const Button BUTTON_CENTER = Button(PUSH_BUTTON_2_ANALOG_PORT);
 
-extern Navigation nav = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, TX_PIN, RX_PIN);
+extern const Navigation NAV = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, TX_PIN, RX_PIN);
 
-extern Motor motor = Motor(RWPM, LWPM, L_EN, R_EN);
+extern const Motor RIGHT_MOTOR = Motor(RIGHT_RWPM, RIGHT_LWPM, L_EN, R_EN);
+extern const Motor LEFT_MOTOR = Motor(LEFT_RWPM, LEFT_LWPM, L_EN, R_EN);
+
+//=============================================
 
 void setup() 
 {
@@ -47,10 +56,28 @@ void setup()
 
   Serial.println(TEAM_NAME);
   Serial.println("Initializing robot!");
-  //Serial.println(nav.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
-  motor.init();
+  Serial.println(NAV.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
+  RIGHT_MOTOR.init();
+  LEFT_MOTOR.init();
 }
 
 void loop() 
 {
+  for (int i = 0; i < 4; i++)
+  {
+    RIGHT_MOTOR.setPower(100);
+    LEFT_MOTOR.setPower(-100);
+
+    delay(1200);
+
+    RIGHT_MOTOR.stop();
+    LEFT_MOTOR.stop();
+
+    delay(1200);
+  }
+
+  RIGHT_MOTOR.setPower(100);
+  LEFT_MOTOR.setPower(100);
+
+  delay(10000);
 }

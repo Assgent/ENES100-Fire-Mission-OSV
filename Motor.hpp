@@ -7,7 +7,7 @@ Don't put actual code here!
 class Motor
 {
   public:
-	  Motor(int RWPMIn, int LWPMIn, int L_ENIn, int R_ENIn);
+	Motor(int RWPMIn, int LWPMIn, int L_ENIn, int R_ENIn);
     
     int init();
 

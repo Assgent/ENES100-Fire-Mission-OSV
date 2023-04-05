@@ -17,7 +17,7 @@ Don't put actual code here!
 class Navigation
 {
   public:
-	  Navigation(char *name, int teamID, int markerID, int rxPin, int txPin);
+	Navigation(char *name, int teamID, int markerID, int rxPin, int txPin);
     
     int init();
 

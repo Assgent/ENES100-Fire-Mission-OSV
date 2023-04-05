@@ -7,7 +7,7 @@ Don't put actual code here!
 class Photoresistor
 {
   public:
-	  Photoresistor(int analogPinIn);
+	Photoresistor(int analogPinIn);
 
     int rawValue();
 
