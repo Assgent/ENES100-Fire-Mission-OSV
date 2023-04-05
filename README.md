@@ -24,7 +24,7 @@ Utilities (`Utilities.hpp`):
 
 `int rawValue();`
 
-`int Button::pressed()`
+`int pressed()`
 
 ### `Navigation(char *name, int teamID, int markerID, int rxPin, int txPin)`
 
@@ -52,6 +52,7 @@ Utilities (`Utilities.hpp`):
 `int init();` Always call before using the motor!
 
 `void setPower(short power);`
+
 `void stop();`
 
 
