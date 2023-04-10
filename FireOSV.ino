@@ -22,10 +22,10 @@ Tips:
 #define PUSH_BUTTON_1_ANALOG_PORT A0
 #define PUSH_BUTTON_2_ANALOG_PORT A1
 
-#define RX_PIN 2
-#define TX_PIN 3
+#define WIFI_RX 2
+#define WIFI_TX 3
 #define FIRE_TEAM 3
-#define ARUCO_ID 10
+#define ARUCO_ID 13
 #define TEAM_NAME "Notre Dame"
 
 #define RIGHT_RWPM 9
@@ -35,6 +35,8 @@ Tips:
 #define L_EN 0 //We direct-wire the 5v "_EN" connections to 5v bus instead of arduino
 #define R_EN 0 //Use 0 to essentially discard values
 
+
+
 //=============================================
 //Global OSV Controls
 //=============================================
@@ -43,7 +45,7 @@ Tips:
 extern const Button BUTTON_RIGHT = Button(PUSH_BUTTON_1_ANALOG_PORT);
 extern const Button BUTTON_CENTER = Button(PUSH_BUTTON_2_ANALOG_PORT);
 
-extern const Navigation NAV = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, TX_PIN, RX_PIN);
+extern const Navigation NAV = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, WIFI_TX, WIFI_RX);
 
 extern const Motor RIGHT_MOTOR = Motor(RIGHT_RWPM, RIGHT_LWPM, L_EN, R_EN);
 extern const Motor LEFT_MOTOR = Motor(LEFT_RWPM, LEFT_LWPM, L_EN, R_EN);
@@ -56,12 +58,15 @@ void setup()
 
   Serial.println(TEAM_NAME);
   Serial.println("Initializing robot!");
-  //Serial.println(NAV.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
+  Serial.println(NAV.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
   RIGHT_MOTOR.init();
   LEFT_MOTOR.init();
 }
 
+extern const Coordinate coord = Coordinate();
+
 void loop() 
 {
-
+  NAV.passVehicleCoordinates(&coord);
+  printCoordinate(coord);
 }

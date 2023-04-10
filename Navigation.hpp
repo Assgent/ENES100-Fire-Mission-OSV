@@ -6,6 +6,8 @@ Don't put actual code here!
 
 #include "VisionSystemClient.hpp"
 
+#define ARUCO_CROSS_OFFSET 0.065 //6.5cm -> (to meters)
+
 #define X_MAX 3.94
 #define X_MIN 0.07
 #define Y_MAX 1.97
@@ -17,7 +19,7 @@ Don't put actual code here!
 class Navigation
 {
   public:
-	Navigation(char *name, int teamID, int markerID, int rxPin, int txPin);
+	  Navigation(char *name, int teamID, int markerID, int rxPin, int txPin);
     
     int init();
 
@@ -35,14 +37,18 @@ class Navigation
 
     double getRawAngle();
 
-    double getDegreesAngle();
+    double getRadiansAngle();
 
+    double getDegreesAngle();
+  
   private:
     char *name; 
     int teamID; 
     int markerID; 
     int rxPin; 
     int txPin;
+
+    void centerCoordinateToVehicleCenter(Coordinate *coordinate);
 };
 
 void printCoordinate(Coordinate coordinate);

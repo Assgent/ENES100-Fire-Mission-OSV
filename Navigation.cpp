@@ -48,6 +48,8 @@ double Navigation::getRawY()
   if (!Enes100.updateLocation())
     return -1.0;
   
+  centerCoordinateToVehicleCenter(&Enes100.location);
+
   return Enes100.location.y;
 }
 
@@ -57,12 +59,12 @@ Returns -1 if position cannot be obtained
 */
 double Navigation::getVehicleX()
 {
-  double x = getRawX();
+  if (!Enes100.updateLocation())
+    return -1.0;
 
-  if (x == -1.0)
-    return x;
+  centerCoordinateToVehicleCenter(&Enes100.location);
 
-  return 0; //TODO
+  return Enes100.location.x;
 }
 
 /*
@@ -71,10 +73,8 @@ Returns -1 if position cannot be obtained
 */
 double Navigation::getVehicleY()
 {
-  double y = getRawY();
-
-  if (y == -1.0)
-    return y;
+  if (!Enes100.updateLocation())
+    return -1.0;
 
   return 0; //TODO
 }
@@ -85,9 +85,24 @@ Get raw angle of OSV as transmitted from system in range [-pi, pi]
 double Navigation::getRawAngle()
 {
   if (!Enes100.updateLocation())
-    return -1;
+    return -1.0;
   
   return Enes100.location.theta;
+}
+
+/*
+Get angle of OSV converted to Radians [0, 2pi]
+*/
+double Navigation::getRadiansAngle()
+{
+  if (!Enes100.updateLocation())
+    return -1.0;
+  
+  //Fix orientation of angle (radians) and store it; right now it comes in range [-pi, pi] 
+  //and we convert it to [0, 2pi] with this code
+  double radians = Enes100.location.theta < 0 ? Enes100.location.theta + 2.0 * Enes100.location.theta : Enes100.location.theta;
+
+  return radians;
 }
 
 /*
@@ -95,19 +110,12 @@ Get angle of OSV converted to degrees [0, 360]
 */
 double Navigation::getDegreesAngle()
 {
-  if (!Enes100.updateLocation())
-    return -1;
-  
-  //Fix orientation of angle (radians) and store it; right now it comes in range [-pi, pi] 
-  //and we convert it to [0, 2pi] with this code
-  double radians = Enes100.location.theta < 0 ? Enes100.location.theta + 2.0 * Enes100.location.theta : Enes100.location.theta;
-
-  return RADIANS_TO_DECIMAL(radians); //This macro is from "Utilities.hpp"
+  return RADIANS_TO_DECIMAL(getRadiansAngle()); //This macro is from "Utilities.hpp"
 }
 
 /*
 Accepts a Coordinate instance, as defined in "VisionSystemClient.hpp". 
-Returns the raw coordinates of the aruco marker in the provided coordinate.
+Returns the raw coordinates of the aruco marker in the provided coordinate, after checking for location availability. 
 */
 void Navigation::passRawCoordinates(Coordinate *coordinate)
 {
@@ -123,11 +131,29 @@ void Navigation::passRawCoordinates(Coordinate *coordinate)
 
 /*
 Accepts a Coordinate instance, as defined in "VisionSystemClient.hpp". 
-Returns the adjusted coordinates of the aruco marker in the provided coordinate.
+Returns the adjusted coordinates of the aruco marker in the provided coordinate, after checking for location availability. (for Public use)
 */
 void Navigation::passVehicleCoordinates(Coordinate *coordinate)
 {
-  //TODO
+  if (!Enes100.updateLocation())
+    coordinate->x, coordinate->y, coordinate->theta = -1.0f;
+  else
+  {
+    centerCoordinateToVehicleCenter(coordinate);
+  }
+}
+
+/*
+Accepts a Coordinate instance, as defined in "VisionSystemClient.hpp". 
+Returns the adjusted coordinates of the aruco marker in the provided coordinate. (Private use only)
+*/
+void Navigation::centerCoordinateToVehicleCenter(Coordinate *coordinate)
+{
+  double radians = Enes100.location.theta < 0 ? Enes100.location.theta + 2.0 * Enes100.location.theta : Enes100.location.theta;
+
+  //We do some linear algebra here
+  coordinate->x = coordinate->x + -ARUCO_CROSS_OFFSET * sin(radians);
+  coordinate->y = coordinate->y +  ARUCO_CROSS_OFFSET * cos(radians);
 }
 
 /*
