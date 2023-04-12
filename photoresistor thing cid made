@@ -1,0 +1,45 @@
+const int photoresistor = A0;
+const int outputpin = 8;
+int sensorevalue;
+const int inputpin = 7;
+boolean currentinput = LOW;
+boolean lastinput = LOW;
+int i;
+int count = 0;
+void setup() {
+  Serial.begin(9600);
+  pinMode(inputpin, INPUT);
+  pinMode(outputpin, OUTPUT);
+  i = 0;
+
+}
+  boolean debounce(boolean last){
+    boolean current = digitalRead(inputpin);
+    if (last != current){
+      delay(3);
+      current = digitalRead(inputpin);
+    }
+    return current;
+  }
+void loop(){ 
+  while (count < 2) {
+    sensorevalue = analogRead(photoresistor);
+      if ((sensorevalue > 600)){
+        digitalWrite(outputpin, HIGH);
+      }
+      else{
+        digitalWrite(outputpin, LOW);
+      }
+    currentinput = debounce(lastinput);
+      if (lastinput == LOW && currentinput == HIGH){
+        i++;
+        count++;
+      }    
+      lastinput = currentinput;
+
+      Serial.print("total numnber = ");
+      Serial.println(i-1);
+  }
+      Serial.print("total numnber = ");
+      Serial.println(i-1);
+}
