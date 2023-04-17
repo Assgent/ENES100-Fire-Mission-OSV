@@ -22,8 +22,8 @@ Tips:
 #define PUSH_BUTTON_1_ANALOG_PORT A0
 #define PUSH_BUTTON_2_ANALOG_PORT A1
 
-#define WIFI_RX 2
-#define WIFI_TX 3
+#define WIFI_RX 3
+#define WIFI_TX 4
 #define FIRE_TEAM 3
 #define ARUCO_ID 13
 #define TEAM_NAME "Notre Dame"
@@ -45,10 +45,10 @@ Tips:
 extern const Button BUTTON_RIGHT = Button(PUSH_BUTTON_1_ANALOG_PORT);
 extern const Button BUTTON_CENTER = Button(PUSH_BUTTON_2_ANALOG_PORT);
 
-extern const Navigation NAV = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, WIFI_TX, WIFI_RX);
-
 extern const Motor RIGHT_MOTOR = Motor(RIGHT_RWPM, RIGHT_LWPM, L_EN, R_EN);
 extern const Motor LEFT_MOTOR = Motor(LEFT_RWPM, LEFT_LWPM, L_EN, R_EN);
+
+extern const Navigation NAV = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, WIFI_TX, WIFI_RX, &RIGHT_MOTOR, &LEFT_MOTOR);
 
 //=============================================
 
@@ -58,15 +58,15 @@ void setup()
 
   Serial.println(TEAM_NAME);
   Serial.println("Initializing robot!");
-  Serial.println(NAV.init() ? "Navigation initalized" : "[Error] Navigation initalization failed!");
   RIGHT_MOTOR.init();
   LEFT_MOTOR.init();
+  Serial.println(NAV.init() ? "Navigation initialized!" : "[Error] Navigation Initialization Failed!");
 }
 
 extern const Coordinate coord = Coordinate();
 
 void loop() 
 {
-  NAV.passVehicleCoordinates(&coord);
-  printCoordinate(coord);
+  Serial.println("Loop!");
+  NAV.turnToDegrees(90.0);
 }
