@@ -104,7 +104,7 @@ double Navigation::getRadiansAngle()
   
   //Fix orientation of angle (radians) and store it; right now it comes in range [-pi, pi] 
   //and we convert it to [0, 2pi] with this code
-  double radians = rawAngle < 0 ? -1.0 * rawAngle + 2 * (M_PI + rawAngle) : rawAngle;
+  double radians = FIX_RAD_ORIENTATION(rawAngle);
 
   return radians;
 }
@@ -154,11 +154,11 @@ Returns the adjusted coordinates of the aruco marker in the provided coordinate.
 */
 void Navigation::centerCoordinateToVehicleCenter(Coordinate *coordinate)
 {
-  double radians = Enes100.location.theta < 0 ? -1.0 * Enes100.location.theta + 2 * (M_PI + Enes100.location.theta) : Enes100.location.theta;
+  double radians = FIX_RAD_ORIENTATION(Enes100.location.theta);
 
   //We do some linear algebra here
-  coordinate->x = Enes100.location.x + -ARUCO_CROSS_OFFSET * sin(radians);
-  coordinate->y = Enes100.location.y +  ARUCO_CROSS_OFFSET * cos(radians);
+  coordinate->x = Enes100.location.x + -ARUCO_Y_OFFSET * sin(radians);
+  coordinate->y = Enes100.location.y +  ARUCO_Y_OFFSET * cos(radians);
 }
 
 /*
@@ -167,13 +167,18 @@ Turns the OSV to specified degrees from [0, 360].
 Example:
 0 degrees -> positive-x direction
 90 degrees -> positive-y direction
-*/
-void Navigation::turnToDegrees(double degrees)
-{
-  delay(2000);
 
+Returns 1 on success, 0 if something goes wrong.
+*/
+int Navigation::turnToDegrees(double degrees)
+{
   double currentAngle = getDegreesAngle();
-  int direction = degrees > currentAngle ? 1 : -1;
+  //If angle is unavailable, do nothing
+  if (currentAngle == -1.0)
+    return 0;
+
+  int direction = degrees <= currentAngle ? 1 : -1;
+  int turnExpired;
 
   leftMotor->setPower(-1 * direction * TURN_MOTOR_POWER);
   rightMotor->setPower(direction * TURN_MOTOR_POWER);
@@ -183,7 +188,7 @@ void Navigation::turnToDegrees(double degrees)
   while (currentAngle == -1.0 || abs(currentAngle - degrees) >= TURN_DEGREES_ACCEPTABLE_ERROR) //Block thread until we reached the angle
   {
     //Prevent us from turning forever if we lose degree information. This code times out the turn after specified time.
-    if (millis() - startTime > TURN_MAXIMUM_TIME) 
+    if ((turnExpired = millis() - startTime > TURN_MAXIMUM_TIME)) 
       break;
 
     currentAngle = getDegreesAngle();
@@ -191,6 +196,82 @@ void Navigation::turnToDegrees(double degrees)
 
   leftMotor->stop();
   rightMotor->stop();
+
+  //Return whether our turn succeeded or it expired 
+  return turnExpired;
+}
+
+/*
+Moves the OSV in a straight line for the specified distance, at speed [0, 100]
+*/
+void Navigation::moveDistance(double distance, int speed)
+{
+  //First, get our current position
+  Coordinate current = Coordinate();
+  passVehicleCoordinates(&current);
+  //If location is unavailable, do nothing
+  if (current.x == -1.0)
+    return;
+
+  //Get our current distance from the center
+  double currentDistanceFromOrigin = DISTANCE_FROM_ORIGIN(current.x, current.y);
+
+  //Get a value to scale our vector by in order to get our target
+  double scaleConstant = (distance - currentDistanceFromOrigin) / currentDistanceFromOrigin;
+  
+  //Find a target coordinate from the distance given
+  Coordinate target = Coordinate();
+  target.x = current.x * scaleConstant;
+  target.y = current.y * scaleConstant;
+
+  leftMotor->setPower(speed);
+  rightMotor->setPower(speed);
+
+  long startTime = millis();
+  //Block thread until we reached the position within a circle of error
+  while (target.x == -1.0 || \
+  (current.x - target.x)*(current.x - target.x) + (current.y - target.y)*(current.y - target.y) > MOVE_ACCEPTABLE_DEVIATION) 
+  {
+    //Prevent us from turning forever if we lose degree information. This code times out the turn after specified time.
+    if (millis() - startTime > MOVE_MAXIMUM_TIME) 
+      break;
+
+    current = Coordinate();
+    passVehicleCoordinates(&current);
+  }
+
+  leftMotor->stop();
+  rightMotor->stop();
+}
+
+/*
+Turns the OSV to face the target coordinate before moving in a straight line towards that location.
+OSV will travel at specified speed [0, 100]
+*/
+void Navigation::goToCoordinates(Coordinate target, int travelSpeed)
+{
+  //First, get our current position
+  Coordinate current = Coordinate();
+  passVehicleCoordinates(&current);
+  //If location is unavailable, do nothing
+  if (current.x == -1.0)
+    return;
+
+  //Get x and y values for a vector stemming from the origin, representing our vehicle's path
+  double xOffset = target.x - current.x;
+  double yOffset = target.y - current.y;
+
+  //Get the length of travel (magnitude of vector)
+  double r = DISTANCE_FROM_ORIGIN(xOffset, yOffset);
+
+  //Get the angle we need to turn to, in radians [0, 2pi]
+  double radians = FIX_RAD_ORIENTATION(acos(xOffset / r));
+  //...then, get that same angle in degrees
+  double degrees = RADIANS_TO_DECIMAL(radians);
+
+  //Finally, turn our OSV towards the target point. If the turn succeeds, then move the vehicle.
+  if (turnToDegrees(degrees))
+    moveDistance(r, travelSpeed);
 }
 
 /*

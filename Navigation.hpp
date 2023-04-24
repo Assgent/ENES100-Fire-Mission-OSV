@@ -7,11 +7,15 @@ Don't put actual code here!
 #include "VisionSystemClient.hpp"
 #include "Motor.hpp"
 
-#define ARUCO_CROSS_OFFSET 0.065 //6.5cm -> (to meters)
+#define ARUCO_Y_OFFSET 0.065 //6.5cm -> (to meters)
 
-#define TURN_MOTOR_POWER 60
-#define TURN_DEGREES_ACCEPTABLE_ERROR 10 //In degrees
-#define TURN_MAXIMUM_TIME 5000 //In milliseconds
+#define TURN_MOTOR_POWER 30
+#define TURN_DEGREES_ACCEPTABLE_ERROR 3 //In degrees
+#define TURN_MAXIMUM_TIME 25000 //In milliseconds
+
+#define MOVE_ACCEPTABLE_DEVIATION 0.05 //In meters squared
+#define MOVE_MAXIMUM_TIME 15000 //In milliseconds
+
 
 #define X_MAX 3.94
 #define X_MIN 0.07
@@ -50,7 +54,11 @@ class Navigation
 
     //=== Movement functions:
 
-    void turnToDegrees(double degrees);
+    int turnToDegrees(double degrees);
+
+    void moveDistance(double distance, int speed);
+
+    void goToCoordinates(Coordinate target, int travelSpeed);
   
   private:
     char *name; 

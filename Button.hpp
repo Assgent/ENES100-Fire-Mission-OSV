@@ -7,7 +7,7 @@ Don't put actual code here!
 class Button
 {
   public:
-	Button(int analogPinIn);
+	  Button(int analogPinIn);
 
     int rawValue();
 
