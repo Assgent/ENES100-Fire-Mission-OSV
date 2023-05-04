@@ -9,12 +9,12 @@ Don't put actual code here!
 
 #define ARUCO_Y_OFFSET 0.065 //6.5cm -> (to meters)
 
-#define TURN_MOTOR_POWER 30
-#define TURN_DEGREES_ACCEPTABLE_ERROR 3 //In degrees
-#define TURN_MAXIMUM_TIME 25000 //In milliseconds
+#define TURN_DEGREES_ACCEPTABLE_ERROR 4.0 //In degrees
+#define TURN_MAXIMUM_TIME 35000 //In milliseconds
+#define TURN_TIME_INCREMENT 50 //In milliseconds
 
-#define MOVE_ACCEPTABLE_DEVIATION 0.05 //In meters squared
-#define MOVE_MAXIMUM_TIME 15000 //In milliseconds
+#define MOVE_ACCEPTABLE_DEVIATION 0.31 //In meters squared
+#define MOVE_MAXIMUM_TIME 20000 //In milliseconds
 
 
 #define X_MAX 3.94
@@ -25,6 +25,8 @@ Don't put actual code here!
 #define L1 1.46
 #define L2 2.34
 
+#if !defined(NAVIGATION_HPP)
+#define NAVIGATION_HPP
 class Navigation
 {
   public:
@@ -56,9 +58,9 @@ class Navigation
 
     int turnToDegrees(double degrees);
 
-    void moveDistance(double distance, int speed);
+    void moveDistance(double distance);
 
-    void goToCoordinates(Coordinate target, int travelSpeed);
+    void goToCoordinates(Coordinate target);
   
   private:
     char *name; 
@@ -74,4 +76,4 @@ class Navigation
 
 void printCoordinate(Coordinate coordinate);
 
-
+#endif

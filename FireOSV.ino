@@ -17,6 +17,7 @@ Tips:
 #include "Navigation.hpp"
 #include "Button.hpp"
 #include "Motor.hpp"
+#include "Utilities.hpp"
 
 //=============================================
 //OSV Settings (Pins, values, etc.)
@@ -24,16 +25,20 @@ Tips:
 #define PUSH_BUTTON_1_ANALOG_PORT A0
 #define PUSH_BUTTON_2_ANALOG_PORT A1
 
-#define WIFI_RX 3
-#define WIFI_TX 4
+#define NAVIGATION_ENABLE 1 //Use for debugging w/o aruco system
+#define WIFI_RX 12
+#define WIFI_TX 13
 #define FIRE_TEAM 3
 #define ARUCO_ID 13
 #define TEAM_NAME "Notre Dame"
 
-#define RIGHT_RWPM 9
-#define RIGHT_LWPM 10
-#define LEFT_RWPM 5
-#define LEFT_LWPM 6
+#define RIGHT_PIN_1 5
+#define RIGHT_PIN_2 4
+#define RIGHT_POWER_PIN 10
+#define LEFT_PIN_1 7
+#define LEFT_PIN_2 6
+#define LEFT_POWER_PIN 11
+
 #define L_EN 0 //We direct-wire the 5v "_EN" connections to 5v bus instead of arduino
 #define R_EN 0 //Use 0 to essentially discard values
 
@@ -49,10 +54,10 @@ Tips:
 static const Button BUTTON_RIGHT = Button(PUSH_BUTTON_1_ANALOG_PORT);
 static const Button BUTTON_CENTER = Button(PUSH_BUTTON_2_ANALOG_PORT);
 
-static const Motor RIGHT_MOTOR = Motor(RIGHT_RWPM, RIGHT_LWPM, L_EN, R_EN);
-static const Motor LEFT_MOTOR = Motor(LEFT_RWPM, LEFT_LWPM, L_EN, R_EN);
+static const Motor RIGHT_MOTOR = Motor(RIGHT_PIN_1, RIGHT_PIN_2, RIGHT_POWER_PIN);
+static const Motor LEFT_MOTOR = Motor(LEFT_PIN_1, LEFT_PIN_2, LEFT_POWER_PIN);
 
-static const Navigation NAV = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, WIFI_TX, WIFI_RX, &RIGHT_MOTOR, &LEFT_MOTOR);
+static const Navigation NAV = Navigation(TEAM_NAME, FIRE_TEAM, ARUCO_ID, WIFI_RX, WIFI_TX, &RIGHT_MOTOR, &LEFT_MOTOR);
 
 static const Servo SERVO = Servo();
 
@@ -68,7 +73,15 @@ void setup()
   RIGHT_MOTOR.init();
   LEFT_MOTOR.init();
 
-  Serial.println(NAV.init() ? "Navigation initialized!" : "[Error] Navigation Initialization Failed!");
+  delay(2000);
+
+  while (NAVIGATION_ENABLE && !NAV.init())
+  {
+    Serial.println("Initializing Navigation...");
+    delay(500);
+  }
+
+  Serial.println("Navigation initialized!");
   
   SERVO.attach(SERVO_PIN);
 }
@@ -77,9 +90,24 @@ static const Coordinate coord = Coordinate();
 
 void loop() 
 {
+  locationMoveTest(&NAV);
+
+  /*
+  LEFT_MOTOR.setPower(-90);
+  delay(1000);
+
+  NAV.turnToDegrees(0.0);
+  delay(1000);
+  NAV.turnToDegrees(45.0);
+  delay(1000);
+  NAV.turnToDegrees(180.0);
+  delay(1000);
+  NAV.turnToDegrees(315.0);
+  delay(1000);
+  
   RIGHT_MOTOR.setPower(-100);
   LEFT_MOTOR.setPower(100);
-  /*
+  
   NAV.turnToDegrees(1.0);
   delay(1000);
   

@@ -4,26 +4,28 @@ This is an ".hpp" file, meaning that it stores defnitions, constants, and protot
 Don't put actual code here!
 */
 
+#define FORWARD 1
+#define REVERSE 0
+
 #if !defined(MOTOR_HPP)
 #define MOTOR_HPP
 class Motor
 {
   public:
-	  Motor(int RWPMIn, int LWPMIn, int L_ENIn, int R_ENIn);
+	  Motor(int pin1In, int pin2In, int powerPinIn);
     
     int init();
     int isInitialized();
 
-    void setPower(short power);
+    void turn(short direction);
     void stop();
 
   private:
     int initialized;
 
-    int RWPM;
-    int LWPM;
-    int L_EN;
-    int R_EN;
+    int pin1;
+    int pin2;
+    int powerPin;
 
     int currentDirection;
 };

@@ -3,16 +3,13 @@
 #include "Utilities.hpp"
 #include "Motor.hpp"
 
-Motor::Motor(int RWPMIn, int LWPMIn, int L_ENIn, int R_ENIn)
+Motor::Motor(int pin1In, int pin2In, int powerPinIn)
 {
   initialized = 0;
 
-  RWPM = RWPMIn;
-  LWPM = LWPMIn;
-  L_EN = L_ENIn;
-  R_EN = R_ENIn;
-
-  currentDirection = RWPM;
+  pin1 = pin1In;
+  pin2 = pin2In;
+  powerPin = powerPinIn;
 }
 
 /*
@@ -20,18 +17,13 @@ Initializes the BTS7960 Motor Controller
 */
 int Motor::init()
 {
-  const int ALL_PINS[] = {RWPM, LWPM, L_EN, R_EN};
+  const int ALL_PINS[] = {pin1, pin2, powerPin};
 
-  for (int i = 0; i < 4; i++) //Properly initialize our pins
+  for (int i = 0; i < 3; i++) //Properly initialize our pins
   {
     pinMode(ALL_PINS[i], OUTPUT);
     digitalWrite(ALL_PINS[i], LOW);
   }
-
-  //Enable "Right" and "Left" movement on the HBridge
-  //Notice use of digitalWrite to simply turn it on and keep it on.
-  digitalWrite(R_EN, HIGH);  
-  digitalWrite(L_EN, HIGH);
 
   initialized = 1;
 
@@ -47,27 +39,22 @@ int Motor::isInitialized()
 }
 
 /*
-Accepts a power value from [-100, 100], where 100 represents the highest motor power possible
+Accepts -1 or 1, indicating the respective reverse and forward directions.
+
+Turns the motors in the specified directions.
+
+(Our motor driver is only capable of running full power.)
 
 Checks for initialization. Will do nothing if Motor was not initialized.
-
-NOTE: Below power values of 51, the motor may struggle to turn in one direction but not the other.
 */
-void Motor::setPower(short power)
+void Motor::turn(short direction)
 {
-  if (initialized)
+  if (initialized && (direction == 1 || direction == 0))
   {
-    short powerValue = map(abs(power), 0, 100, 0, 255);
-    int requestedDirectionPin = power >= 0 ? RWPM : LWPM;
+    digitalWrite(pin1, direction);
+    digitalWrite(pin2, !direction);
 
-    if (requestedDirectionPin != currentDirection)
-    {
-      analogWrite(currentDirection, 0); //Stop the motor turning the other way if we need to
-    }
-
-    analogWrite(requestedDirectionPin, powerValue); //Finally, set our motor power 
-
-    currentDirection = requestedDirectionPin; //update our direction
+    analogWrite(powerPin, 255);
   }
 }
 
@@ -79,6 +66,9 @@ Checks for initialization. Will do nothing if Motor was not initialized.
 void Motor::stop()
 {
   if (initialized)
-    analogWrite(currentDirection, 0);
+  {
+    digitalWrite(pin1, LOW);
+    digitalWrite(pin2, LOW);
+  }
 }
 

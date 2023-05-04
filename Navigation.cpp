@@ -23,7 +23,7 @@ Returns 1 on success, or 0 if wifi module could not connect to aruco system, or 
 */
 int Navigation::init()
 {
-  if (!Enes100.begin(name, teamID, markerID, rxPin, txPin) || !rightMotor->isInitialized() || !leftMotor->isInitialized())
+  if (!Enes100.begin(name, teamID, markerID, txPin, rxPin) || !rightMotor->isInitialized() || !leftMotor->isInitialized())
     return 0;
 
   Enes100.println("Team Notre Dame says hi!");
@@ -101,6 +101,9 @@ Get angle of OSV converted to Radians [0, 2pi]
 double Navigation::getRadiansAngle()
 {
   double rawAngle = getRawAngle();
+
+  if (rawAngle == -1.0)
+    return -1.0;
   
   //Fix orientation of angle (radians) and store it; right now it comes in range [-pi, pi] 
   //and we convert it to [0, 2pi] with this code
@@ -114,7 +117,12 @@ Get angle of OSV converted to degrees [0, 360]
 */
 double Navigation::getDegreesAngle()
 {
-  return RADIANS_TO_DECIMAL(getRadiansAngle()); //This macro is from "Utilities.hpp"
+  double radiansAngle = getRadiansAngle();
+
+  if (radiansAngle == -1.0)
+    return -1.0;
+
+  return RADIANS_TO_DECIMAL(radiansAngle); //This macro is from "Utilities.hpp"
 }
 
 /*
@@ -177,12 +185,8 @@ int Navigation::turnToDegrees(double degrees)
   if (currentAngle == -1.0)
     return 0;
 
-  int direction = degrees <= currentAngle ? 1 : -1;
-  int turnExpired;
-
-  leftMotor->setPower(-1 * direction * TURN_MOTOR_POWER);
-  rightMotor->setPower(direction * TURN_MOTOR_POWER);
-
+  short direction = degrees <= currentAngle ? FORWARD : REVERSE;
+  int turnExpired = 0;
   long startTime = millis();
   //If we temporarily lose angle information (-1.0), keep going for a time
   while (currentAngle == -1.0 || abs(currentAngle - degrees) >= TURN_DEGREES_ACCEPTABLE_ERROR) //Block thread until we reached the angle
@@ -192,19 +196,31 @@ int Navigation::turnToDegrees(double degrees)
       break;
 
     currentAngle = getDegreesAngle();
+
+    /*Turn a little bit at a time*/
+    leftMotor->turn(direction);
+    rightMotor->turn(!direction);
+
+    delay(TURN_TIME_INCREMENT);
+
+    leftMotor->stop();
+    rightMotor->stop();
+
+    delay(100);
   }
 
+  /*Ensure our motors are stopped*/
   leftMotor->stop();
   rightMotor->stop();
 
-  //Return whether our turn succeeded or it expired 
-  return turnExpired;
+  //If our turn did NOT expire, return 1 to indicate success
+  return !turnExpired;
 }
 
 /*
-Moves the OSV in a straight line for the specified distance, at speed [0, 100]
+Moves the OSV in a straight line for the specified distance
 */
-void Navigation::moveDistance(double distance, int speed)
+void Navigation::moveDistance(double distance)
 {
   //First, get our current position
   Coordinate current = Coordinate();
@@ -212,25 +228,21 @@ void Navigation::moveDistance(double distance, int speed)
   //If location is unavailable, do nothing
   if (current.x == -1.0)
     return;
-
-  //Get our current distance from the center
-  double currentDistanceFromOrigin = DISTANCE_FROM_ORIGIN(current.x, current.y);
-
-  //Get a value to scale our vector by in order to get our target
-  double scaleConstant = (distance - currentDistanceFromOrigin) / currentDistanceFromOrigin;
   
-  //Find a target coordinate from the distance given
-  Coordinate target = Coordinate();
-  target.x = current.x * scaleConstant;
-  target.y = current.y * scaleConstant;
+  //Record our current position
+  Coordinate origin = Coordinate();
+  origin.x = current.x;
+  origin.y = current.y;
 
-  leftMotor->setPower(speed);
-  rightMotor->setPower(speed);
+  short direction = distance >= 0.0;
+  leftMotor->turn(direction);
+  rightMotor->turn(direction);
 
+  double absDistance = abs(distance);
   long startTime = millis();
-  //Block thread until we reached the position within a circle of error
-  while (target.x == -1.0 || \
-  (current.x - target.x)*(current.x - target.x) + (current.y - target.y)*(current.y - target.y) > MOVE_ACCEPTABLE_DEVIATION) 
+  //Block thread until we have traveled the specified distance
+  while (current.x == -1.0 || \
+  DISTANCE(current.x, current.y, origin.x, origin.y) < absDistance) 
   {
     //Prevent us from turning forever if we lose degree information. This code times out the turn after specified time.
     if (millis() - startTime > MOVE_MAXIMUM_TIME) 
@@ -246,9 +258,8 @@ void Navigation::moveDistance(double distance, int speed)
 
 /*
 Turns the OSV to face the target coordinate before moving in a straight line towards that location.
-OSV will travel at specified speed [0, 100]
 */
-void Navigation::goToCoordinates(Coordinate target, int travelSpeed)
+void Navigation::goToCoordinates(Coordinate target)
 {
   //First, get our current position
   Coordinate current = Coordinate();
@@ -257,21 +268,25 @@ void Navigation::goToCoordinates(Coordinate target, int travelSpeed)
   if (current.x == -1.0)
     return;
 
-  //Get x and y values for a vector stemming from the origin, representing our vehicle's path
-  double xOffset = target.x - current.x;
-  double yOffset = target.y - current.y;
-
   //Get the length of travel (magnitude of vector)
-  double r = DISTANCE_FROM_ORIGIN(xOffset, yOffset);
+  double distance = DISTANCE(current.x, current.y, target.x, target.y);
 
   //Get the angle we need to turn to, in radians [0, 2pi]
-  double radians = FIX_RAD_ORIENTATION(acos(xOffset / r));
+  double xOffset = target.x - current.x;
+  double yOffset = target.y - current.y;
+  double sign = yOffset / abs(yOffset);
+  double radians = FIX_RAD_ORIENTATION(sign * acos(xOffset / distance));
   //...then, get that same angle in degrees
   double degrees = RADIANS_TO_DECIMAL(radians);
 
-  //Finally, turn our OSV towards the target point. If the turn succeeds, then move the vehicle.
+  Enes100.print("Now moving to: "); Enes100.print(target.x); Enes100.print(", "); Enes100.println(target.y);
+  Enes100.print("Degrees: "); Enes100.println(degrees);
+  Enes100.print("Distance: "); Enes100.println(distance);
+  Enes100.print("\n");
+
+  //Finally, turn our OSV towards the origin point. If the turn succeeds, then move the vehicle.
   if (turnToDegrees(degrees))
-    moveDistance(r, travelSpeed);
+    moveDistance(distance);
 }
 
 /*
