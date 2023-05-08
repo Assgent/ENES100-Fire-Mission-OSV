@@ -244,6 +244,11 @@ void Navigation::moveDistance(double distance)
   while (current.x == -1.0 || \
   DISTANCE(current.x, current.y, origin.x, origin.y) < absDistance) 
   {
+    /* //For debugging
+    Enes100.println(current.y - origin.x);
+    Enes100.print("         ");
+    Enes100.println(DISTANCE(current.x, current.y, origin.x, origin.y));
+    */
     //Prevent us from turning forever if we lose degree information. This code times out the turn after specified time.
     if (millis() - startTime > MOVE_MAXIMUM_TIME) 
       break;

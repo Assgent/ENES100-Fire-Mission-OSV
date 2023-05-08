@@ -26,8 +26,8 @@ Tips:
 #define PUSH_BUTTON_2_ANALOG_PORT A1
 
 #define NAVIGATION_ENABLE 1 //Use for debugging w/o aruco system
-#define WIFI_RX 12
-#define WIFI_TX 13
+#define WIFI_RX 13
+#define WIFI_TX 12
 #define FIRE_TEAM 3
 #define ARUCO_ID 13
 #define TEAM_NAME "Notre Dame"
@@ -81,7 +81,8 @@ void setup()
     delay(500);
   }
 
-  Serial.println("Navigation initialized!");
+  Serial.print("Navigation status: ");
+  Serial.println(NAVIGATION_ENABLE ? "Success" : "[WARNING] DISABLED");
   
   SERVO.attach(SERVO_PIN);
 }
@@ -90,97 +91,30 @@ static const Coordinate coord = Coordinate();
 
 void loop() 
 {
-  locationMoveTest(&NAV);
+  //motorTest(&LEFT_MOTOR, &RIGHT_MOTOR);
 
-  /*
-  LEFT_MOTOR.setPower(-90);
-  delay(1000);
+  //Approaching Mission
 
-  NAV.turnToDegrees(0.0);
-  delay(1000);
-  NAV.turnToDegrees(45.0);
-  delay(1000);
-  NAV.turnToDegrees(180.0);
-  delay(1000);
-  NAV.turnToDegrees(315.0);
-  delay(1000);
-  
-  RIGHT_MOTOR.setPower(-100);
-  LEFT_MOTOR.setPower(100);
-  
-  NAV.turnToDegrees(1.0);
-  delay(1000);
-  
-  for (double i = 45.0; i <= 135.0; i += 45.0)
-  {
-    NAV.turnToDegrees(i);
-    delay(1000);
-  }
+  NAV.moveDistance(0.75);
 
-  NAV.turnToDegrees(1.0);
-  delay(1000);*/
-  /*
-  RIGHT_MOTOR.setPower(100);
-  LEFT_MOTOR.setPower(100);
+  //      TODO: RUN FLAME + DETECTION CODE HERE (as a function)
+  //delay(4000);
 
-  delay(3000);
+  //NAV.moveDistance(-0.15);
 
-  RIGHT_MOTOR.stop();
-  LEFT_MOTOR.stop();
+  //Turning to face obsticles 
 
-   for (int i = 30; i < 146; i++) {
-    SERVO.write(i);
-    delay(20);
-  }
-  delay(2000);
-  for (int i = 145; i > 30; i--) {
-    SERVO.write(i);
-    delay(20);
-  }
-  delay(2000);
+  //NAV.turnToDegrees(0.1);
 
-  RIGHT_MOTOR.setPower(-100);
-  LEFT_MOTOR.setPower(-100);
+  //Move to L1
 
-  delay(1000);
+  //NAV.moveDistance(abs(NAV.getVehicleX() - L1));
 
-  RIGHT_MOTOR.stop();
-  LEFT_MOTOR.stop();
 
-  RIGHT_MOTOR.setPower(100);
-  LEFT_MOTOR.setPower(-100);
 
-  delay(2000);
+  //double angle = NAV.getDegreesAngle();
+  //const int FACING_UP = IN_RANGE(angle, 1.0, 179.0); //1 for facing up; 0 for facing down
 
-  RIGHT_MOTOR.setPower(100);
-  LEFT_MOTOR.setPower(100);
 
-  delay(8000);
-
-  RIGHT_MOTOR.stop();
-  LEFT_MOTOR.stop();
-
-  RIGHT_MOTOR.setPower(-60);
-  LEFT_MOTOR.setPower(60);
-
-  delay(4000);
-
-  RIGHT_MOTOR.setPower(100);
-  LEFT_MOTOR.setPower(100);
-
-  delay(3500);
-
-  RIGHT_MOTOR.setPower(30);
-  LEFT_MOTOR.setPower(-30);
-
-  delay(4000);
-
-  RIGHT_MOTOR.stop();
-  LEFT_MOTOR.stop();
-  */
-  /*NAV.moveDistance(0.5, 100);
-  NAV.turnToDegrees(90);  
-  NAV.moveDistance(0.3, 100);
-  NAV.turnToDegrees(0.0);
-  NAV.moveDistance(0.5, 100);*/
+  delay(5000); //End delay
 }
