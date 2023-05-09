@@ -5,6 +5,8 @@
 #include "Motor.hpp"
 #include "VisionSystemClient.hpp"
 #include "Enes100.h"
+#include "Button.hpp"
+#include <Servo.h>
 
 Navigation::Navigation(char *nameIn, int teamIDIn, int markerIDIn, int rxPinIn, int txPinIn, Motor *leftMotorIn, Motor *rightMotorIn)
 {
@@ -309,6 +311,47 @@ void printCoordinate(Coordinate coordinate)
   Serial.print("[Angle=");
   Serial.print(coordinate.theta);
   Serial.println("])");
+}
+
+Servo myservo;
+void analyzeFlames(int pin1, int pin2, int pin3, int pin4)
+{
+  myservo.attach(A5);
+  
+  int count = 0;
+  for (int i = 145; i > 40; i += -1) 
+  {
+    myservo.write(i);
+    delay(20);
+  }
+  if (analogRead(pin1) > FLAME_THRESHOLD) 
+  {
+    count++;
+  }
+  if (analogRead(pin2) > FLAME_THRESHOLD) 
+  {
+    count++;
+  }
+  if ((analogRead(pin3) + 100) > FLAME_THRESHOLD) 
+  {
+    count++;
+  }
+  if (analogRead(pin4) > FLAME_THRESHOLD) 
+  {
+    count++;
+  }
+  Enes100.print("Flame count: "); Enes100.println(count);
+  delay(10000);
+  for (int i = 40; i < 146; i++) 
+  {
+    myservo.write(i);
+    delay(20);
+  }
+}
+
+void analyzeButtons(Button *b1, Button *b2)
+{
+  Enes100.print("Mission orientation: "); Enes100.println(getOrientation(*b1, *b2));
 }
 
 

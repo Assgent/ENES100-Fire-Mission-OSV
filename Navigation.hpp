@@ -5,16 +5,19 @@ Don't put actual code here!
 */
 
 #include "VisionSystemClient.hpp"
+#include "Button.hpp"
 #include "Motor.hpp"
 
 #define ARUCO_Y_OFFSET 0.065 //6.5cm -> (to meters)
 
-#define TURN_DEGREES_ACCEPTABLE_ERROR 4.0 //In degrees
+#define TURN_DEGREES_ACCEPTABLE_ERROR 2.5 //In degrees
 #define TURN_MAXIMUM_TIME 35000 //In milliseconds
-#define TURN_TIME_INCREMENT 50 //In milliseconds
+#define TURN_TIME_INCREMENT 40 //In milliseconds
 
 #define MOVE_ACCEPTABLE_DEVIATION 0.31 //In meters squared
 #define MOVE_MAXIMUM_TIME 20000 //In milliseconds
+
+#define FLAME_THRESHOLD 820
 
 
 #define X_MAX 3.94
@@ -75,5 +78,7 @@ class Navigation
 };
 
 void printCoordinate(Coordinate coordinate);
+void analyzeFlames(int pin1, int pin2, int pin3, int pin4);
+void analyzeButtons(Button *b1, Button *b2);
 
 #endif

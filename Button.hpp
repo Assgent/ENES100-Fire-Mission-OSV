@@ -4,6 +4,8 @@ This is an ".hpp" file, meaning that it stores defnitions, constants, and protot
 Don't put actual code here!
 */
 
+#if !defined(BUTTON_HPP)
+#define BUTTON_HPP
 class Button
 {
   public:
@@ -18,5 +20,6 @@ class Button
 };
 
 char getOrientation(Button b1, Button b2);
+#endif
 
 

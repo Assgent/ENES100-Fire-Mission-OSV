@@ -22,8 +22,8 @@ Tips:
 //=============================================
 //OSV Settings (Pins, values, etc.)
 //=============================================
-#define PUSH_BUTTON_1_ANALOG_PORT A0
-#define PUSH_BUTTON_2_ANALOG_PORT A1
+#define PUSH_BUTTON_1_ANALOG_PORT 9
+#define PUSH_BUTTON_2_ANALOG_PORT 8
 
 #define NAVIGATION_ENABLE 1 //Use for debugging w/o aruco system
 #define WIFI_RX 13
@@ -91,29 +91,42 @@ static const Coordinate coord = Coordinate();
 
 void loop() 
 {
-  //motorTest(&LEFT_MOTOR, &RIGHT_MOTOR);
+  if (NAV.getVehicleY() < 1.0)
+    NAV.turnToDegrees(90.0);
+  else
+    NAV.turnToDegrees(270.0);
 
-  //Approaching Mission
+  LEFT_MOTOR.turn(FORWARD);
+  RIGHT_MOTOR.turn(FORWARD);
+  delay(6000);
+  LEFT_MOTOR.stop();
+  RIGHT_MOTOR.stop();
 
-  NAV.moveDistance(0.75);
+  //analyzeButtons(&BUTTON_CENTER, &BUTTON_RIGHT);
 
-  //      TODO: RUN FLAME + DETECTION CODE HERE (as a function)
-  //delay(4000);
+  analyzeFlames(A0, A1, A2, A3);
 
-  //NAV.moveDistance(-0.15);
+  delay(1000);
 
-  //Turning to face obsticles 
+  /*
 
-  //NAV.turnToDegrees(0.1);
+  LEFT_MOTOR.turn(REVERSE);
+  RIGHT_MOTOR.turn(REVERSE);
+  delay(1000);
+  LEFT_MOTOR.stop();
+  RIGHT_MOTOR.stop();
 
-  //Move to L1
+  NAV.turnToDegrees(0.0);
 
-  //NAV.moveDistance(abs(NAV.getVehicleX() - L1));
+  NAV.moveDistance(4.0);
 
+  NAV.turnToDegrees(90.0);
 
+  NAV.moveDistance(0.5);
 
-  //double angle = NAV.getDegreesAngle();
-  //const int FACING_UP = IN_RANGE(angle, 1.0, 179.0); //1 for facing up; 0 for facing down
+  NAV.turnToDegrees(0.0);
+
+  NAV.moveDistance(2.0);*/
 
 
   delay(5000); //End delay

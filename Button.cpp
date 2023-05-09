@@ -15,12 +15,12 @@ Button::Button(int analogPinIn)
 
 int Button::rawValue()
 {
-  return analogRead(analogPin);
+  return digitalRead(analogPin);
 }
 
 int Button::pressed()
 {
-  return IN_RANGE(rawValue(), CLICK_BOUND_LOWER, CLICK_BOUND_UPPER);
+  return digitalRead(analogPin);
 }
 
 /*
