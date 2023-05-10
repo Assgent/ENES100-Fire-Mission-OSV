@@ -10,12 +10,14 @@ Don't put actual code here!
 
 #define ARUCO_Y_OFFSET 0.065 //6.5cm -> (to meters)
 
-#define TURN_DEGREES_ACCEPTABLE_ERROR 2.5 //In degrees
+#define TURN_DEGREES_ACCEPTABLE_ERROR 4.5 //In degrees
 #define TURN_MAXIMUM_TIME 35000 //In milliseconds
-#define TURN_TIME_INCREMENT 40 //In milliseconds
+#define TURN_TIME_INCREMENT 60 //In milliseconds
 
 #define MOVE_ACCEPTABLE_DEVIATION 0.31 //In meters squared
 #define MOVE_MAXIMUM_TIME 20000 //In milliseconds
+
+#define ATTEMPT_MOVE_TIMEOUT 3500 //In milliseconds
 
 #define FLAME_THRESHOLD 820
 
@@ -63,7 +65,15 @@ class Navigation
 
     void moveDistance(double distance);
 
+    void moveToX(double targetX);
+
+    void moveToY(double targetY);
+
     void goToCoordinates(Coordinate target);
+
+    void moveTime(short direction, long milliseconds);
+
+    int attemptToMove(long timeout);
   
   private:
     char *name; 

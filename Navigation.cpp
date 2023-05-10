@@ -184,8 +184,8 @@ int Navigation::turnToDegrees(double degrees)
 {
   double currentAngle = getDegreesAngle();
   //If angle is unavailable, do nothing
-  if (currentAngle == -1.0)
-    return 0;
+  //if (currentAngle == -1.0)
+  //  return 0;
 
   short direction = degrees <= currentAngle ? FORWARD : REVERSE;
   int turnExpired = 0;
@@ -243,7 +243,7 @@ void Navigation::moveDistance(double distance)
   double absDistance = abs(distance);
   long startTime = millis();
   //Block thread until we have traveled the specified distance
-  while (current.x == -1.0 || \
+  while (current.x == 0.0 || current.x == -1.0 || \
   DISTANCE(current.x, current.y, origin.x, origin.y) < absDistance) 
   {
     /* //For debugging
@@ -286,14 +286,113 @@ void Navigation::goToCoordinates(Coordinate target)
   //...then, get that same angle in degrees
   double degrees = RADIANS_TO_DECIMAL(radians);
 
+  /*
   Enes100.print("Now moving to: "); Enes100.print(target.x); Enes100.print(", "); Enes100.println(target.y);
   Enes100.print("Degrees: "); Enes100.println(degrees);
   Enes100.print("Distance: "); Enes100.println(distance);
   Enes100.print("\n");
+  */
 
   //Finally, turn our OSV towards the origin point. If the turn succeeds, then move the vehicle.
   if (turnToDegrees(degrees))
     moveDistance(distance);
+}
+
+void Navigation::moveTime(short direction, long milliseconds)
+{
+  leftMotor->turn(direction);
+  rightMotor->turn(direction);
+  
+  delay(milliseconds);
+
+  leftMotor->stop();
+  rightMotor->stop();
+} 
+
+void Navigation::moveToX(double targetX)
+{
+  double currentX = getVehicleX();
+
+  double turnDirection = targetX - currentX > 0 ? 0.0 : 180.0;
+
+  if (turnToDegrees(turnDirection))
+  {
+    leftMotor->turn(FORWARD);
+    rightMotor->turn(FORWARD);
+
+    long startTime = millis();
+
+    if (turnDirection == 0.0)
+    {
+      while (getVehicleX() < targetX) 
+        if (millis() - startTime > MOVE_MAXIMUM_TIME) 
+          break;
+    }
+    else
+    {
+      while (getVehicleX() > targetX) 
+        if (millis() - startTime > MOVE_MAXIMUM_TIME) 
+          break;
+    }
+
+    leftMotor->stop();
+    rightMotor->stop();
+  }
+}
+
+void Navigation::moveToY(double targetY)
+{
+  double currentY = getVehicleY();
+
+  double turnDirection = targetY - currentY > 0 ? 90.0 : 270.0;
+
+  if (turnToDegrees(turnDirection))
+  {
+    leftMotor->turn(FORWARD);
+    rightMotor->turn(FORWARD);
+
+    long startTime = millis();
+
+    if (turnDirection == 90.0)
+    {
+      while (getVehicleY() < targetY) 
+        if (millis() - startTime > MOVE_MAXIMUM_TIME) 
+          break;
+    }
+    else
+    {
+      while (getVehicleY() > targetY) 
+        if (millis() - startTime > MOVE_MAXIMUM_TIME) 
+          break;
+    }
+
+    leftMotor->stop();
+    rightMotor->stop();
+  }
+}
+
+int Navigation::attemptToMove(long timeout)
+{
+  //First, get our current position
+  Coordinate origin = Coordinate();
+  passVehicleCoordinates(&origin);
+  //If location is unavailable, do nothing
+  if (origin.x == -1.0)
+    return -1;
+
+  leftMotor->turn(FORWARD);
+  rightMotor->turn(FORWARD);
+
+  long startTime = millis();
+  while (millis() - startTime < timeout);
+
+  leftMotor->stop();
+  rightMotor->stop();
+
+  Coordinate current = Coordinate();
+  passVehicleCoordinates(&current);
+  
+  return DISTANCE(current.x, current.y, origin.x, origin.y) > 0.15 ? 1 : 0;
 }
 
 /*
@@ -313,7 +412,7 @@ void printCoordinate(Coordinate coordinate)
   Serial.println("])");
 }
 
-Servo myservo;
+static const Servo myservo;
 void analyzeFlames(int pin1, int pin2, int pin3, int pin4)
 {
   myservo.attach(A5);

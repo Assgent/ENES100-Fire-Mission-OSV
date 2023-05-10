@@ -91,42 +91,79 @@ static const Coordinate coord = Coordinate();
 
 void loop() 
 {
+  //motorTest(&LEFT_MOTOR, &RIGHT_MOTOR);
+  //delay(1000);
+
   if (NAV.getVehicleY() < 1.0)
     NAV.turnToDegrees(90.0);
   else
     NAV.turnToDegrees(270.0);
 
-  LEFT_MOTOR.turn(FORWARD);
-  RIGHT_MOTOR.turn(FORWARD);
-  delay(6000);
-  LEFT_MOTOR.stop();
-  RIGHT_MOTOR.stop();
+  NAV.moveTime(FORWARD, 5000);
 
-  //analyzeButtons(&BUTTON_CENTER, &BUTTON_RIGHT);
+  analyzeButtons(&BUTTON_CENTER, &BUTTON_RIGHT);
 
   analyzeFlames(A0, A1, A2, A3);
 
   delay(1000);
 
-  /*
+  NAV.moveTime(REVERSE, 3000);
 
-  LEFT_MOTOR.turn(REVERSE);
-  RIGHT_MOTOR.turn(REVERSE);
-  delay(1000);
-  LEFT_MOTOR.stop();
-  RIGHT_MOTOR.stop();
+  //Navigation
 
-  NAV.turnToDegrees(0.0);
+  NAV.moveToY(1.0);
 
-  NAV.moveDistance(4.0);
+  NAV.moveToX(L1);  
+
+  NAV.moveToY(1.4);
+
+  //Obsticle detection
+  
+  OBSTICLE_1:
 
   NAV.turnToDegrees(90.0);
 
-  NAV.moveDistance(0.5);
+  //On success
+  if (NAV.attemptToMove(ATTEMPT_MOVE_TIMEOUT))
+    goto OBSTICLE_2;
 
-  NAV.turnToDegrees(0.0);
+  NAV.moveTime(REVERSE, 1000);
 
-  NAV.moveDistance(2.0);*/
+  NAV.moveToY(1.0);
+
+  NAV.turnToDegrees(90.0);
+
+  //On success
+  if (NAV.attemptToMove(ATTEMPT_MOVE_TIMEOUT))
+    goto OBSTICLE_2;
+
+  NAV.moveTime(REVERSE, 1000);
+
+  NAV.moveToY(0.6);
+
+  NAV.turnToDegrees(90.0);
+
+  NAV.attemptToMove(ATTEMPT_MOVE_TIMEOUT);
+
+
+  OBSTICLE_2:
+
+  NAV.moveToX(L2);
+
+  if (!NAV.attemptToMove(ATTEMPT_MOVE_TIMEOUT))
+  {
+    NAV.moveTime(REVERSE, 1000);
+
+    NAV.moveToY(L1);
+  }
+
+  LIMBO:
+
+  NAV.moveToX(4.50);
+
+  NAV.moveToY(1.6);
+
+  NAV.moveToX(6.0);
 
 
   delay(5000); //End delay
